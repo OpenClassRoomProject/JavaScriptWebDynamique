@@ -1,39 +1,70 @@
-async function LoadPiece() 
+async function LoadPieces() 
 {
     // Get pieces data from the JSON file
     const reponse = await fetch("./ressources/json/pieces-autos.json");
     const pieces = await reponse.json();
 
-    // Creation of the html elements
-    const article = pieces[0];
-
-    const imageElement = document.createElement("img");
-    imageElement.src = article.image;
-
-    const nomElement = document.createElement("h2");
-    nomElement.innerText = article.nom;
-
-    const prixElement = document.createElement("p");
-    prixElement.innerText = `Prix: ${article.prix} € (${article.prix < 35 ? "€" : "€€€"})`;
-
-    const categorieElement = document.createElement("p");
-    categorieElement.innerText = article.categorie ?? "Catégorie inconnue";
-
-    const descriptionElement = document.createElement("p");
-    descriptionElement.innerText = article.description ?? "Pas de description disponible.";
-
-    const inStockElement = document.createElement("p");
-    inStockElement.innerText = article.disponibilite ? "En stock" : "Rupture de stock";
-
-    // Add elements to the DOM
     const sectionFiches = document.querySelector(".fiches");
 
-    sectionFiches.appendChild(imageElement);
-    sectionFiches.appendChild(nomElement);
-    sectionFiches.appendChild(prixElement);
-    sectionFiches.appendChild(categorieElement);
-    sectionFiches.appendChild(descriptionElement);
-    sectionFiches.appendChild(inStockElement);
+    // instantiate every pieces from the JSON file and add it to the section
+    for (let i = 0; i < pieces.length; i++)
+    {
+        AddPieceToSection(pieces[i], sectionFiches);
+    }
+
+    const boutonTrier = document.querySelector(".btn-trier");
+    boutonTrier.addEventListener("click", function () 
+    {
+        const piecesSorted = Array.from(pieces)
+        piecesSorted.sort((a, b) => 
+        {
+            return a.prix - b.prix
+        });
+        console.log(piecesSorted);
+    });
+
+    const boutonFiltrer = document.querySelector(".btn-filtrer");
+    boutonFiltrer.addEventListener("click", function () 
+    {
+        const piecesFiltered = pieces.filter(piece => 
+        {
+            return piece.prix < 35
+        });
+        console.log(piecesFiltered);
+    });
 }
 
-LoadPiece();
+function AddPieceToSection(pieces, sectionFiches) 
+{
+    const pieceElement = document.createElement("article");
+
+    const imageElement = document.createElement("img");
+    imageElement.src = pieces.image;
+
+    const nomElement = document.createElement("h2");
+    nomElement.innerText = pieces.nom;
+
+    const prixElement = document.createElement("p");
+    prixElement.innerText = `Prix: ${pieces.prix} € (${pieces.prix < 35 ? "€" : "€€€"})`;
+
+    const categorieElement = document.createElement("p");
+    categorieElement.innerText = pieces.categorie ?? "Catégorie inconnue";
+
+    const descriptionElement = document.createElement("p");
+    descriptionElement.innerText = pieces.description ?? "Pas de description disponible.";
+
+    const inStockElement = document.createElement("p");
+    inStockElement.innerText = pieces.disponibilite ? "En stock" : "Rupture de stock";
+
+    pieceElement.appendChild(imageElement);
+    pieceElement.appendChild(nomElement);
+    pieceElement.appendChild(prixElement);
+    pieceElement.appendChild(categorieElement);
+    pieceElement.appendChild(descriptionElement);
+    pieceElement.appendChild(inStockElement);
+
+    sectionFiches.appendChild(pieceElement);
+}
+
+
+LoadPieces();
